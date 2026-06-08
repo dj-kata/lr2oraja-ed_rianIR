@@ -80,10 +80,6 @@ public class ObsListener implements MainStateListener {
 		return false;
 	}
 
-	public synchronized void triggerPlayEnded() {
-		triggerStateChange(MainStateType.PLAY.name() + ObsConfigurationView.TIMING_SUFFIX_END);
-	}
-
 	public synchronized void triggerStateChange(MainStateType stateType) {
 		triggerStateChange(stateType.name() + ObsConfigurationView.TIMING_SUFFIX_START);
 	}
@@ -190,7 +186,9 @@ public class ObsListener implements MainStateListener {
 			return;
 		}
 
-		if (currentStateType != lastStateType) {
+		if (currentStateType == MainStateType.PLAY && lastStateType == MainStateType.PLAY) {
+			triggerStateChange(currentStateType);
+		} else if (currentStateType != lastStateType) {
 			if (lastStateType != null) {
 				triggerStateChange(lastStateType.name() + ObsConfigurationView.TIMING_SUFFIX_END);
 			}

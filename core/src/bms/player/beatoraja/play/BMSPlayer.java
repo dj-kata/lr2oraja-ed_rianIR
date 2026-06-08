@@ -1112,9 +1112,6 @@ public class BMSPlayer extends MainState {
 	}
 
 	public void stopPlay() {
-		if (main.hasObsListener()) {
-			main.getObsListener().triggerPlayEnded();
-		}
 		if (state == STATE_PRACTICE) {
 			practice.saveProperty();
 			timer.setTimerOn(TIMER_FADEOUT);
