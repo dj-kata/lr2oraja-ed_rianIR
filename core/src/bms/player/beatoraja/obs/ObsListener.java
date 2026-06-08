@@ -70,17 +70,6 @@ public class ObsListener implements MainStateListener {
 		triggerStateChange(ObsConfigurationView.TIMING_MAIN + ObsConfigurationView.TIMING_SUFFIX_END);
 	}
 
-	private void triggerReplay() {
-		if (obsClient == null || !obsClient.isConnected()) {
-			return;
-		}
-		if (obsClient.isRecording()) {
-			obsClient.restartRecording();
-		}
-		triggerStateChange(MainStateType.MUSICSELECT);
-		obsClient.scheduler.schedule(() -> triggerStateChange(MainStateType.PLAY), 1000, TimeUnit.MILLISECONDS);
-	}
-
 	private synchronized boolean cancelScheduledStop() {
 		ScheduledFuture<?> task = scheduledStopTask;
 		if (task != null && !task.isDone()) {
@@ -201,9 +190,7 @@ public class ObsListener implements MainStateListener {
 			return;
 		}
 
-		if (currentStateType == MainStateType.PLAY && lastStateType == MainStateType.PLAY) {
-			triggerReplay();
-		} else if (currentStateType != lastStateType) {
+		if (currentStateType != lastStateType) {
 			if (lastStateType != null) {
 				triggerStateChange(lastStateType.name() + ObsConfigurationView.TIMING_SUFFIX_END);
 			}
