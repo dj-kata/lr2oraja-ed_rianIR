@@ -38,7 +38,9 @@ public class PlayModeConfig {
     public PlayModeConfig(Mode mode) {
         boolean midi = (mode == Mode.KEYBOARD_24K || mode == Mode.KEYBOARD_24K_DOUBLE);
         this.keyboard = new KeyboardConfig(mode, !midi);
-        controller = new ControllerConfig[mode.player];
+        // PMSのみ、2Pコントローラーを開放
+        int controllerCount = (mode == Mode.POPN_5K || mode == Mode.POPN_9K) ? 2 : mode.player;
+        controller = new ControllerConfig[controllerCount];
         for(int i = 0;i < controller.length;i++) {
             controller[i] = new ControllerConfig(mode, i, false);
         }

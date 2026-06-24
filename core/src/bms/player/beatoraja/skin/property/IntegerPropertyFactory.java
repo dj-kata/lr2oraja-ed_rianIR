@@ -457,7 +457,19 @@ public class IntegerPropertyFactory {
 	
 	public enum ValueType {
 		
-		notesdisplaytiming(12, (state) -> (state.main.getPlayerResource().getPlayerConfig().getJudgetiming())), 
+		notesdisplaytiming(12, (state) -> {
+			PlayConfig pc = null;
+			if (state instanceof MusicSelector) {
+				pc = ((MusicSelector) state).getSelectedBarPlayConfig();
+			}
+			else {
+				pc = state.resource.getPlayerConfig().getPlayConfig(state.resource.getPlayerConfig().getMode()).getPlayconfig();
+			}
+			if (pc != null) {
+				return pc.getJudgetiming();
+			}
+			return Integer.MIN_VALUE;
+		}), 
 
 		playtime_total_hour(17, (state) -> ((int) (state.main.getPlayerResource().getPlayerData().getPlaytime() / 3600))),
 		playtime_total_minute(18, (state) -> ((int) (state.main.getPlayerResource().getPlayerData().getPlaytime() / 60) % 60)),

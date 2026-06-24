@@ -131,7 +131,8 @@ public class PlayConfigurationView implements Initializable {
 	private Spinner<Double> hispeedmargin;
 	@FXML
 	private CheckBox hispeedautoadjust;
-
+	@FXML
+	private CheckBox pmsSwitchLaneCover;
 	@FXML
 	private ComboBox<Integer> scoreop;
 	@FXML
@@ -358,7 +359,7 @@ public class PlayConfigurationView implements Initializable {
 		initComboBox(autosavereplay4, autosaves);
 
 		httpDownloadSource.getItems().setAll(HttpDownloadProcessor.DOWNLOAD_SOURCES.keySet());
-		notesdisplaytiming.setValueFactoryValues(PlayerConfig.JUDGETIMING_MIN, PlayerConfig.JUDGETIMING_MAX, 0, 1);
+		notesdisplaytiming.setValueFactoryValues(PlayConfig.JUDGETIMING_MIN, PlayConfig.JUDGETIMING_MAX, 0, 1);
 		resourceController.init(this);
 		discordController.init(this);
 		obsController.init(this);
@@ -544,6 +545,8 @@ public class PlayConfigurationView implements Initializable {
         }
         playername.setText(player.getName());
 
+		player.migrationJudgetiming();
+
 		videoController.updatePlayer(player);
 		musicselectController.updatePlayer(player);
 
@@ -559,7 +562,6 @@ public class PlayConfigurationView implements Initializable {
 		gaugeop.getSelectionModel().select(player.getGauge());
 		lntype.getSelectionModel().select(player.getLnmode());
 
-		notesdisplaytiming.getValueFactory().setValue(player.getJudgetiming());
 		notesdisplaytimingautoadjust.setSelected(player.isNotesDisplayTimingAutoAdjust());
 
 		bpmguide.setSelected(player.isBpmguide());
@@ -583,6 +585,7 @@ public class PlayConfigurationView implements Initializable {
 		markprocessednote.setSelected(player.isMarkprocessednote());
 		extranotedepth.getValueFactory().setValue(player.getExtranoteDepth());
 		dxMode.setSelected(player.isDxMode());
+		pmsSwitchLaneCover.setSelected(player.isPmsSwitchLaneCover());
 
 		autosavereplay1.getSelectionModel().select(player.getAutoSaveReplay()[0]);
 		autosavereplay2.getSelectionModel().select(player.getAutoSaveReplay()[1]);
@@ -676,10 +679,10 @@ public class PlayConfigurationView implements Initializable {
 		player.setWindowHold(windowhold.isSelected());
 		player.setGauge(gaugeop.getValue());
 		player.setLnmode(lntype.getValue());
-		player.setJudgetiming(getValue(notesdisplaytiming));
 		player.setNotesDisplayTimingAutoAdjust(notesdisplaytimingautoadjust.isSelected());
 		
 		player.setDxMode(dxMode.isSelected());
+		player.setPmsSwitchLaneCover(pmsSwitchLaneCover.isSelected());
 
 		player.setBpmguide(bpmguide.isSelected());
 		player.setGaugeAutoShift(gaugeautoshift.getValue());
@@ -771,6 +774,7 @@ public class PlayConfigurationView implements Initializable {
 			conf.setEnablehidden(enableHidden.isSelected());
 			conf.setLift(getValue(lift) / 1000f);
 			conf.setHidden(getValue(hidden) / 1000f);
+			conf.setJudgetiming(getValue(notesdisplaytiming));
 			conf.setJudgetype(JudgeAlgorithm.values()[judgealgorithm.getValue()].name());
 			conf.setHispeedAutoAdjust(hispeedautoadjust.isSelected());
 		}
@@ -792,6 +796,7 @@ public class PlayConfigurationView implements Initializable {
 		enableHidden.setSelected(conf.isEnablehidden());
 		lift.getValueFactory().setValue((int) (conf.getLift() * 1000));
 		hidden.getValueFactory().setValue((int) (conf.getHidden() * 1000));
+		notesdisplaytiming.getValueFactory().setValue(conf.getJudgetiming());
 		judgealgorithm.setValue(JudgeAlgorithm.getIndex(conf.getJudgetype()));
 		hispeedautoadjust.setSelected(conf.isEnableHispeedAutoAdjust());
 	}

@@ -760,6 +760,7 @@ public class JudgeManager {
         }
 
         final PlayerConfig player = main.main.getPlayerConfig();
+        final PlayConfig pc = player.getPlayConfig(main.getMode()).getPlayconfig();
         if(player.isNotesDisplayTimingAutoAdjust()) {
             final BMSPlayerMode autoplay = main.resource.getPlayMode();
             if(autoplay.mode == BMSPlayerMode.Mode.PLAY || autoplay.mode == BMSPlayerMode.Mode.PRACTICE) {
@@ -767,7 +768,7 @@ public class JudgeManager {
                     pressesSinceLastAutoadjust++;
                     if (pressesSinceLastAutoadjust > 9) {
                         if (mfast <= -500 || mfast >= 500) {
-                            player.setJudgetiming(player.getJudgetiming() + (int) (mfast < 0 ? 1 : -1));
+                            pc.setJudgetiming(pc.getJudgetiming() + (int) (mfast < 0 ? 1 : -1));
                         }
                         pressesSinceLastAutoadjust = 0;
                     }

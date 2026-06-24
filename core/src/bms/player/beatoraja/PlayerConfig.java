@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.text.ParseException;
 
+import bms.player.beatoraja.PlayModeConfig.ControllerConfig;
 import bms.player.beatoraja.system.RobustFile;
 import bms.player.beatoraja.exceptions.PlayerConfigException;
 import bms.player.beatoraja.ir.IRConnectionManager;
@@ -83,6 +84,11 @@ public final class PlayerConfig {
 	
 	public static final int JUDGETIMING_MAX = 500;
 	public static final int JUDGETIMING_MIN = -500;
+
+	/**
+	 * 判定タイミングをPlayerConfigからPlayConfigに移行したか
+	 */
+	private boolean migrationJudgetiming = false;
 	
 	/**
 	 * ディスプレイ表示タイミング自動調整
@@ -151,6 +157,12 @@ public final class PlayerConfig {
 	 * DX MODE (Force DX Judge & Gauge, Disable IR)
 	 */
 	private boolean dxMode = false;
+
+	/**
+	 * PMS における Lane Cover 切り替え方法
+	 * false: START 2回で切り替え (通常) true: START 1回で切り替え
+	 */
+	private boolean pmsSwitchLaneCover = false;
 
 	/**
 	 * H-RANDOM連打しきい値BPM
@@ -302,6 +314,19 @@ public final class PlayerConfig {
 		this.judgetiming = judgetiming;
 	}
 
+	public void migrationJudgetiming() {
+		if (this.migrationJudgetiming == false) {
+			this.getPlayConfig(Mode.BEAT_5K).getPlayconfig().setJudgetiming(getJudgetiming());
+			this.getPlayConfig(Mode.BEAT_7K).getPlayconfig().setJudgetiming(getJudgetiming());
+			this.getPlayConfig(Mode.BEAT_10K).getPlayconfig().setJudgetiming(getJudgetiming());
+			this.getPlayConfig(Mode.BEAT_14K).getPlayconfig().setJudgetiming(getJudgetiming());
+			this.getPlayConfig(Mode.POPN_9K).getPlayconfig().setJudgetiming(getJudgetiming());
+			this.getPlayConfig(Mode.KEYBOARD_24K).getPlayconfig().setJudgetiming(getJudgetiming());
+			this.getPlayConfig(Mode.KEYBOARD_24K_DOUBLE).getPlayconfig().setJudgetiming(getJudgetiming());
+		}
+		this.migrationJudgetiming = true;
+	}
+
 	public boolean isNotesDisplayTimingAutoAdjust() {
 		return notesDisplayTimingAutoAdjust;
 	}
@@ -406,6 +431,19 @@ public final class PlayerConfig {
 		this.dxMode = dxMode;
 	}
 
+	public boolean isPmsSwitchLaneCover() {
+		return pmsSwitchLaneCover;
+	}
+
+	public void setPmsSwitchLaneCover(boolean pmsSwitchLaneCover) {
+		this.pmsSwitchLaneCover = pmsSwitchLaneCover;
+	}
+
+	// PmsSwitchLaneCoverはPMSに限り有効とするため、呼び出す場合はモードの判定を伴うようにする。
+	public boolean isPmsSwitchLaneCoverWithMode(Mode modeId) {
+		return (pmsSwitchLaneCover && (modeId == Mode.POPN_5K || modeId == Mode.POPN_9K) ? true : false);
+	}
+
 	public PlayModeConfig getPlayConfig(Mode modeId) {
 		switch (modeId != null ? modeId : Mode.BEAT_7K) {
 		case BEAT_5K:
@@ -489,6 +527,16 @@ public final class PlayerConfig {
 	}
 
 	public PlayModeConfig getMode9() {
+		if (mode9 == null) {
+			mode9 = new PlayModeConfig(Mode.POPN_9K);
+		} else if (mode9.getController().length < 2) {
+			ControllerConfig[] oldControllers = mode9.getController();
+			ControllerConfig[] newControllers = new ControllerConfig[2];
+			newControllers[0] = oldControllers.length > 0 ? oldControllers[0] : new ControllerConfig(Mode.POPN_9K, 0, false);
+			newControllers[1] = new ControllerConfig(Mode.POPN_9K, 1, false);
+			mode9.setController(newControllers);
+			logger.warn("mode9のControllerを拡張");
+		}
 		return mode9;
 	}
 
@@ -896,7 +944,6 @@ public final class PlayerConfig {
 		chartReplicationMode = chartReplicationMode != null ? chartReplicationMode : "NONE";
 		targetid = targetid!= null ? targetid : "MAX";
 		targetlist = targetlist != null ? targetlist : new String[0];
-		judgetiming = MathUtils.clamp(judgetiming, JUDGETIMING_MIN, JUDGETIMING_MAX);
 		misslayerDuration = MathUtils.clamp(misslayerDuration, 0, 5000);
 		lnmode = MathUtils.clamp(lnmode, 0, 2);
 		keyJudgeWindowRatePerfectGreat = MathUtils.clamp(keyJudgeWindowRatePerfectGreat, 25, 400);

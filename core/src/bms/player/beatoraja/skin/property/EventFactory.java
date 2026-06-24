@@ -391,17 +391,15 @@ public class EventFactory {
 			}
 		}),
 		notesdisplaytiming(74, (state, arg1) -> {
-	        final PlayerConfig config = state.resource.getPlayerConfig();
-
-	        int inc = arg1 >= 0 ? (config.getJudgetiming() < PlayerConfig.JUDGETIMING_MAX ? 1 : 0)
-	        		: (config.getJudgetiming() > PlayerConfig.JUDGETIMING_MIN ? -1 : 0);
-	        
-	        if(inc != 0) {
-                config.setJudgetiming(config.getJudgetiming() + inc);
-    			if(state instanceof MusicSelector) {
-                    state.play(OPTION_CHANGE);		        	
-    			}
-	        }
+			if(state instanceof MusicSelector selector) {
+				PlayConfig pc = selector.getSelectedBarPlayConfig();
+				int inc = arg1 >= 0 ? (pc.getJudgetiming() < PlayConfig.JUDGETIMING_MAX ? 1 : 0)
+						: (pc.getJudgetiming() > PlayConfig.JUDGETIMING_MIN ? -1 : 0);
+				if(inc != 0) {
+					pc.setJudgetiming(pc.getJudgetiming() + inc);
+				}	
+				state.play(OPTION_CHANGE);
+			}
 		}),
 		notesdisplaytimingautoadjust(75, (state) -> {
 	        final PlayerConfig config = state.resource.getPlayerConfig();

@@ -82,6 +82,14 @@ public class PlayConfig implements Cloneable {
 	private boolean enablehidden = false;
 
 	/**
+	 * 判定タイミング
+	 */
+	private int judgetiming = 0;
+	
+	public static final int JUDGETIMING_MAX = 500;
+	public static final int JUDGETIMING_MIN = -500;
+
+	/**
 	 * レーンカバー変化間隔(低速)
 	 */
 	private float lanecovermarginlow = 0.001f;
@@ -248,6 +256,13 @@ public class PlayConfig implements Cloneable {
 		this.judgetype = judgetype;
 	}
 
+	public int getJudgetiming() {
+		return judgetiming;
+	}
+
+	public void setJudgetiming(int judgetiming) {
+		this.judgetiming = judgetiming;
+	}
 
 	public void validate() {
 		hispeed = MathUtils.clamp(hispeed, HISPEED_MIN, HISPEED_MAX);
@@ -264,6 +279,7 @@ public class PlayConfig implements Cloneable {
 		if(JudgeAlgorithm.getIndex(judgetype) == -1) {
 			judgetype = JudgeAlgorithm.Combo.name();
 		}
+		judgetiming = MathUtils.clamp(judgetiming, JUDGETIMING_MIN, JUDGETIMING_MAX);
 	}
 
 	public PlayConfig clone() {

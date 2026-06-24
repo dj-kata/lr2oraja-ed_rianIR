@@ -203,6 +203,11 @@ public class LaneRenderer {
 		resetHispeed(basebpm);
 	}
 
+	// 【追加】レーンカバーの値のみを変更するメソッド
+	public void setLaneCoverNoChangeHispeed(float lanecover) {
+		playconfig.setLanecover(lanecover < 0 ? 0 : (lanecover > 1 ? 1 : lanecover));
+	}
+
 	public void setEnableLanecover(boolean b) {
 		playconfig.setEnablelanecover(b);
 	}
@@ -266,7 +271,7 @@ public class LaneRenderer {
 		}
 		
 		time = (main.timer.isTimerOn(TIMER_PLAY) ? time - main.timer.getTimer(TIMER_PLAY) : 
-			(main.timer.isTimerOn(141) ? time - main.timer.getTimer(141) : 0)) + config.getJudgetiming();
+			(main.timer.isTimerOn(141) ? time - main.timer.getTimer(141) : 0)) + playconfig.getJudgetiming();
 		if (main.getState() == BMSPlayer.STATE_PRACTICE) {
 			time = main.getPracticeConfiguration().getPracticeProperty().starttime;
 			pos = 0;

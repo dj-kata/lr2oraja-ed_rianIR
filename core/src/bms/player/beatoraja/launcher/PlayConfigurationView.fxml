@@ -156,6 +156,11 @@
                                                  <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="500" max="1000000" min="0" />
                                              </valueFactory>
                                          </NumericSpinner>
+                                         <CheckBox fx:id="pmsSwitchLaneCover" mnemonicParsing="false" text="%PMS_SWITCH_LANECOVER" GridPane.columnIndex="4" GridPane.rowIndex="2">
+                                            <tooltip>
+                                                <Tooltip text="%PMS_SWITCH_LANECOVER_TOOLTIP" textAlignment="CENTER" />
+                                            </tooltip>
+                                         </CheckBox>
                                          <CheckBox fx:id="enableLift" mnemonicParsing="false" text="%ENABLE_LIFT" GridPane.columnIndex="0" GridPane.rowIndex="3" />
                                          <NumericSpinner fx:id="lift" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                              <valueFactory>
@@ -411,7 +416,6 @@
                         </children>
                     </HBox>
                     <CheckBox fx:id="dxMode" mnemonicParsing="false" prefHeight="25.0" text="DX MODE" />
-
                     <Button mnemonicParsing="false" onAction="#importScoreDataFromLR2" text="%IMPORT_LR2_SCORE">
                         <VBox.margin>
                             <Insets top="10.0" />
