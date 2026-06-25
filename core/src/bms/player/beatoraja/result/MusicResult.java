@@ -121,7 +121,13 @@ public class MusicResult extends AbstractResult {
 			state = STATE_IR_PROCESSING;
 			
 			List<IRSendStatus> addedScores = new ArrayList<IRSendStatus>();
+			Set<String> processedIRs = new HashSet<String>();
         	for(IRStatus irc : ir) {
+        		if (processedIRs.contains(irc.config.getIrname())) {
+        			continue;
+        		}
+        		processedIRs.add(irc.config.getIrname());
+
     			boolean send = resource.isUpdateScore() && !resource.isForceNoIRSend();
     			switch(irc.config.getIrsend()) {
     			case IRConfig.IR_SEND_ALWAYS:
