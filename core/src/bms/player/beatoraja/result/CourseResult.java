@@ -98,10 +98,6 @@ public class CourseResult extends AbstractResult {
 			final int lnmode = uln ? config.getLnmode() : 0;
 			
         	for(IRStatus irc : ir) {
-        		if (processedIRs.contains(irc.config.getIrname())) {
-        			continue;
-        		}
-        		processedIRs.add(irc.config.getIrname());
 
     			boolean send = resource.isUpdateCourseScore() && !resource.isForceNoIRSend() && resource.getCourseData().isRelease();
     			switch(irc.config.getIrsend()) {
@@ -118,6 +114,12 @@ public class CourseResult extends AbstractResult {
     			}
     			
     			if(send) {
+    				String uniqueKey = irc.config.getIrname() + ":" + irc.config.getUserid() + ":" + irc.config.getPassword();
+    				if (processedIRs.contains(uniqueKey)) {
+    					continue;
+    				}
+    				processedIRs.add(uniqueKey);
+
     				if (IRUtil.shouldSkipIR(irc.config.getIrname(), resource.getPlayerConfig().isDxMode())) {
     					continue;
     				}
