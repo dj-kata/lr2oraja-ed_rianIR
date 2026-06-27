@@ -16,7 +16,6 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 
@@ -103,8 +102,13 @@ public final class IRPluginUpdater {
 
 		int updated = 0;
 		for (IRManifestFile file : manifest.files) {
-			if (updateFile(irDirectory, file)) {
-				updated++;
+			try {
+				if (updateFile(irDirectory, file)) {
+					updated++;
+				}
+			} catch (Exception e) {
+				String fileName = file != null ? file.name : "(null)";
+				logger.warn("[IRPluginUpdater] Failed to update IR plugin file {}: {}", fileName, e.getMessage());
 			}
 		}
 
@@ -159,6 +163,7 @@ public final class IRPluginUpdater {
 			restoreBackup(backup, target);
 			throw e;
 		}
+		deleteBackup(backup);
 		logger.info("[IRPluginUpdater] Updated {} to {}", file.name, file.version);
 		return true;
 	}
@@ -249,6 +254,17 @@ public final class IRPluginUpdater {
 		}
 	}
 
+	private void deleteBackup(Path backup) {
+		if (backup == null) {
+			return;
+		}
+		try {
+			Files.deleteIfExists(backup);
+		} catch (IOException e) {
+			logger.warn("[IRPluginUpdater] Failed to delete backup file {}: {}", backup, e.getMessage());
+		}
+	}
+
 	private void moveReplacing(Path source, Path target) throws IOException {
 		try {
 			Files.move(source, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
@@ -267,7 +283,16 @@ public final class IRPluginUpdater {
 					digest.update(buffer, 0, read);
 				}
 			}
-			return HexFormat.of().formatHex(digest.digest());
+			byte[] hash = digest.digest();
+			StringBuilder hex = new StringBuilder(hash.length * 2);
+			for (byte b : hash) {
+				String value = Integer.toHexString(0xff & b);
+				if (value.length() == 1) {
+					hex.append('0');
+				}
+				hex.append(value);
+			}
+			return hex.toString();
 		} catch (Exception e) {
 			throw new IOException("Failed to calculate SHA-256 for " + path, e);
 		}

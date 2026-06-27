@@ -124,6 +124,7 @@ public class MainLoader extends Application {
 				play(bmsPath, auto, true, null, null, bmsPath != null);
 			}
 		} else {
+			IRPluginUpdater.updateBeforeIRLoad();
 			launch(args);
 		}
 	}
@@ -345,7 +346,6 @@ public class MainLoader extends Application {
         }
 
         try {
-			IRPluginUpdater.updateBeforeIRLoad();
 //			final long t = System.currentTimeMillis();
 			ResourceBundle bundle = ResourceBundle.getBundle("resources.UIResources");
 			FXMLLoader loader = new FXMLLoader(
