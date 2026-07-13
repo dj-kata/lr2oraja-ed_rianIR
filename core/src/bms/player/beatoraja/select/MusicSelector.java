@@ -712,6 +712,9 @@ public final class MusicSelector extends MainState {
 	}
 
 	private Mode getSongMode(SongData song) {
+		if (song == null) {
+			return null;
+		}
 		for (Mode mode : Mode.values()) {
 			if (mode.id == song.getMode()) {
 				return mode;

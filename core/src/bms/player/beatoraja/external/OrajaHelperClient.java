@@ -125,18 +125,20 @@ public final class OrajaHelperClient {
 
 	private static void addSelectScorePayload(Map<String, Object> payload, SongData song, Mode mode,
 			ScoreData bestScore, ScoreData minBpScore) {
-		if (bestScore != null) {
-			payload.put("scoreBest", scorePayload(bestScore, song, mode));
+		Map<String, Object> bestPayload = bestScore != null ? scorePayload(bestScore, song, mode) : null;
+		Map<String, Object> minBpPayload = minBpScore != null ? scorePayload(minBpScore, song, mode) : null;
+		if (bestPayload != null) {
+			payload.put("scoreBest", bestPayload);
 		}
-		if (minBpScore != null) {
-			payload.put("minBpBest", scorePayload(minBpScore, song, mode));
+		if (minBpPayload != null) {
+			payload.put("minBpBest", minBpPayload);
 		}
-		if (bestScore != null && minBpScore != null && !sameScoreEntry(bestScore, minBpScore)) {
-			payload.put("scores", List.of(scorePayload(bestScore, song, mode), scorePayload(minBpScore, song, mode)));
-		} else if (bestScore != null) {
-			payload.put("scores", List.of(scorePayload(bestScore, song, mode)));
-		} else if (minBpScore != null) {
-			payload.put("scores", List.of(scorePayload(minBpScore, song, mode)));
+		if (bestPayload != null && minBpPayload != null && !sameScoreEntry(bestScore, minBpScore)) {
+			payload.put("scores", List.of(bestPayload, minBpPayload));
+		} else if (bestPayload != null) {
+			payload.put("scores", List.of(bestPayload));
+		} else if (minBpPayload != null) {
+			payload.put("scores", List.of(minBpPayload));
 		}
 	}
 
@@ -252,7 +254,7 @@ public final class OrajaHelperClient {
 			return "";
 		}
 		Random option = Random.getRandom(score.getOption() % 10, mode);
-		String name = optionName(option);
+		String name = option != null ? optionName(option) : "";
 		String placement = score.getRandom() > 0 ? String.valueOf(score.getRandom()) : "";
 		return placement.length() > 0 ? name + " " + placement : name;
 	}

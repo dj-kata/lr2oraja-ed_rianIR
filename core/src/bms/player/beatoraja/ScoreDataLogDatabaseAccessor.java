@@ -103,7 +103,7 @@ public class ScoreDataLogDatabaseAccessor extends SQLiteDatabaseAccessor {
 		try {
 			List<ScoreData> score = Validatable.removeInvalidElements(
 					qr.query("SELECT * FROM scoredatalog WHERE " + sql, scoreHandler, params));
-			return score.size() > 0 ? score.get(0) : null;
+			return score != null && !score.isEmpty() ? score.get(0) : null;
 		} catch (Exception e) {
 			logger.error("スコアデータログ取得時の例外:{}", e.getMessage());
 		}
