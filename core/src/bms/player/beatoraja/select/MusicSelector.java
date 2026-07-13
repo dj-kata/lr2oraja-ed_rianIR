@@ -703,8 +703,24 @@ public final class MusicSelector extends MainState {
 		if (timer.getNowTime() < pendingOrajaHelperSongTime + ORAJA_HELPER_SELECT_SEND_DELAY) {
 			return;
 		}
-		OrajaHelperClient.sendSelect(pendingOrajaHelperSong);
+		ScoreData bestScore = main.getPlayDataAccessor().readBestScoreDataFromLog(pendingOrajaHelperSong.getSha256(),
+				pendingOrajaHelperSong.hasUndefinedLongNote(), config.getLnmode());
+		ScoreData minBpScore = main.getPlayDataAccessor().readMinBpScoreDataFromLog(pendingOrajaHelperSong.getSha256(),
+				pendingOrajaHelperSong.hasUndefinedLongNote(), config.getLnmode());
+		OrajaHelperClient.sendSelect(pendingOrajaHelperSong, getSongMode(pendingOrajaHelperSong), bestScore, minBpScore);
 		pendingOrajaHelperSongSent = true;
+	}
+
+	private Mode getSongMode(SongData song) {
+		if (song == null) {
+			return null;
+		}
+		for (Mode mode : Mode.values()) {
+			if (mode.id == song.getMode()) {
+				return mode;
+			}
+		}
+		return null;
 	}
 
 	public PlayConfig getSelectedBarPlayConfig() {

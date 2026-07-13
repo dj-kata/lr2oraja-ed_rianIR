@@ -457,8 +457,6 @@ public class BMSPlayer extends MainState {
 			config.getPlayConfig(model.getMode()).setPlayconfig(HSReplay.config);
 		}
 
-		OrajaHelperClient.sendPlay(resource.getSongdata(), playinfo, model.getMode());
-
 		logger.info("ゲージ設定");
 		if(replay != null) {
 			for(int count = (main.getInputProcessor().getKeyState(5) ? 1 : 0) + (main.getInputProcessor().getKeyState(3) ? 2 : 0);count > 0; count--) {
@@ -494,6 +492,9 @@ public class BMSPlayer extends MainState {
 		final int difficulty = resource.getSongdata() != null ? resource.getSongdata().getDifficulty() : 0;
 		resource.getSongdata().setBMSModel(model);
 		resource.getSongdata().setDifficulty(difficulty);
+		if (shouldSendOrajaHelperPlayEvents()) {
+			OrajaHelperClient.sendPlay(resource.getSongdata(), playinfo, model.getMode());
+		}
 	}
 
 	public SkinType getSkinType() {
@@ -963,7 +964,7 @@ public class BMSPlayer extends MainState {
 	}
 
 	private void sendPlayEndMetrics(boolean quickRetry) {
-		if (playEndMetricsSent || judge == null) {
+		if (playEndMetricsSent || judge == null || !shouldSendOrajaHelperPlayEvents()) {
 			return;
 		}
 		int playedNotes = Math.max(0, judge.getPastNotes());
@@ -972,6 +973,10 @@ public class BMSPlayer extends MainState {
 		OrajaHelperClient.sendPlayEnd(resource.getSongdata(), playinfo, model != null ? model.getMode() : null,
 				judge.getScoreData(), playedNotes, totalNotes, elapsedSeconds, quickRetry);
 		playEndMetricsSent = true;
+	}
+
+	private boolean shouldSendOrajaHelperPlayEvents() {
+		return resource.getPlayMode().mode == BMSPlayerMode.Mode.PLAY && resource.isUpdateScore();
 	}
 
 	public void setPlaySpeed(int playspeed) {
