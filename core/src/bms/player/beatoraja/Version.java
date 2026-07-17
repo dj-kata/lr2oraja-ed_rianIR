@@ -10,7 +10,7 @@ public class Version {
     private static final Logger logger = LoggerFactory.getLogger(Version.class);
     public static final int VERSION_MAJOR = 1;
     public static final int VERSION_MINOR = 2;
-    public static final int VERSION_PATCH = 1;
+    public static final int VERSION_PATCH = 5;
 
     public static final BuildType BUILD_TYPE;
     public static final String version;
@@ -26,7 +26,7 @@ public class Version {
         BUILD_TYPE = BuildType.PRERELEASE;
         unqualifiedVersion = String.valueOf(VERSION_MAJOR) + '.' + VERSION_MINOR + '.' + VERSION_PATCH;
         version = BUILD_TYPE.prefix + unqualifiedVersion;
-        versionLong = "LR2oraja Endless Dream-RIAN" +  unqualifiedVersion + "-beta.1";
+        versionLong = "LR2oraja Endless Dream-RIAN" +  unqualifiedVersion;
         tryLoadingBuildMetaInfo();
     }
 
