@@ -768,7 +768,12 @@ public class JudgeManager {
                     pressesSinceLastAutoadjust++;
                     if (pressesSinceLastAutoadjust > 9) {
                         if (mfast <= -500 || mfast >= 500) {
-                            pc.setJudgetiming(pc.getJudgetiming() + (int) (mfast < 0 ? 1 : -1));
+                            int nextTiming = pc.getJudgetiming() + (int) (mfast < 0 ? 1 : -1);
+                            nextTiming = com.badlogic.gdx.math.MathUtils.clamp(nextTiming, PlayConfig.JUDGETIMING_MIN, PlayConfig.JUDGETIMING_MAX);
+                            pc.setJudgetiming(nextTiming);
+                            if (main.getLanerender() != null) {
+                                main.getLanerender().getPlayConfig().setJudgetiming(nextTiming);
+                            }
                         }
                         pressesSinceLastAutoadjust = 0;
                     }
